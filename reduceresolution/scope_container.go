@@ -24,6 +24,8 @@ type ScopeContainer struct {
 	intCounterAggregate   map[string]*CounterAggregate[int64]
 	floatCounterAggregate map[string]*CounterAggregate[float64]
 
+	histogramAggregate map[string]*HistogramAggregate
+
 	leftoverMetric []pmetric.Metric
 }
 
@@ -36,6 +38,7 @@ func CreateScopeContainer(scopeMetric pmetric.ScopeMetrics) *ScopeContainer {
 		floatGaugeAggregate:   make(map[string]*GaugeAggregate[float64]),
 		intCounterAggregate:   make(map[string]*CounterAggregate[int64]),
 		floatCounterAggregate: make(map[string]*CounterAggregate[float64]),
+		histogramAggregate:    make(map[string]*HistogramAggregate),
 		leftoverMetric:        make([]pmetric.Metric, 0),
 	}
 }
