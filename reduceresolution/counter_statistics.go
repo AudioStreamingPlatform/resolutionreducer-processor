@@ -38,35 +38,35 @@ func CreateCounterAggregate[T CounterValue](metric pmetric.Metric, attributes pc
 }
 
 func AggregateCounter[T CounterValue](aggregate *CounterAggregate[T], startTS pcommon.Timestamp, lastTS pcommon.Timestamp, value T) {
-	switch (*aggregate).aggregation {
+	switch aggregate.aggregation {
 	case pmetric.AggregationTemporalityCumulative:
-		if (*aggregate).lastTS < lastTS {
-			(*aggregate).value = value
-			if startTS < (*aggregate).startTS {
-				(*aggregate).startTS = startTS
+		if aggregate.lastTS < lastTS {
+			aggregate.value = value
+			if startTS < aggregate.startTS {
+				aggregate.startTS = startTS
 			}
-			(*aggregate).lastTS = lastTS
+			aggregate.lastTS = lastTS
 		}
 	case pmetric.AggregationTemporalityDelta:
-		(*aggregate).value += value
-		if startTS < (*aggregate).startTS {
-			(*aggregate).startTS = startTS
+		aggregate.value += value
+		if startTS < aggregate.startTS {
+			aggregate.startTS = startTS
 		}
 	}
 }
 
 func CreateCounterMetrics[T GaugeValue](scope pmetric.ScopeMetrics, aggregate *CounterAggregate[T], aggregationTS pcommon.Timestamp) {
 	metric_value := scope.Metrics().AppendEmpty()
-	metric_value.SetName((*aggregate).name)
-	metric_value.SetUnit((*aggregate).unit)
-	metric_value.SetDescription((*aggregate).description)
+	metric_value.SetName(aggregate.name)
+	metric_value.SetUnit(aggregate.unit)
+	metric_value.SetDescription(aggregate.description)
 	counter := metric_value.SetEmptySum()
-	counter.SetAggregationTemporality((*aggregate).aggregation)
+	counter.SetAggregationTemporality(aggregate.aggregation)
 	counter_dp := counter.DataPoints().AppendEmpty()
-	counter_dp.SetStartTimestamp((*aggregate).startTS)
+	counter_dp.SetStartTimestamp(aggregate.startTS)
 	counter_dp.SetTimestamp(aggregationTS)
-	(*aggregate).attributes.CopyTo(counter_dp.Attributes())
-	switch v := any((*aggregate).value).(type) {
+	aggregate.attributes.CopyTo(counter_dp.Attributes())
+	switch v := any(aggregate.value).(type) {
 	case int64:
 		counter_dp.SetIntValue(v)
 	case float64:

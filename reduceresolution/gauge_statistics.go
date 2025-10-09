@@ -41,16 +41,16 @@ func CreateGaugeAggregate[T GaugeValue](metric pmetric.Metric, attributes pcommo
 }
 
 func AggregateGauge[T GaugeValue](aggregate *GaugeAggregate[T], startTS pcommon.Timestamp, value T) {
-	(*aggregate).count++
-	(*aggregate).sum += value
-	if (*aggregate).min > value {
-		(*aggregate).min = value
+	aggregate.count++
+	aggregate.sum += value
+	if aggregate.min > value {
+		aggregate.min = value
 	}
-	if (*aggregate).max < value {
-		(*aggregate).max = value
+	if aggregate.max < value {
+		aggregate.max = value
 	}
-	if startTS < (*aggregate).startTS {
-		(*aggregate).startTS = startTS
+	if startTS < aggregate.startTS {
+		aggregate.startTS = startTS
 	}
 }
 
@@ -58,14 +58,14 @@ func CreateGaugeMetrics[T GaugeValue](scope pmetric.ScopeMetrics, aggregate *Gau
 
 	createSpecificMetric := func(scope pmetric.ScopeMetrics, aggregate *GaugeAggregate[T], sufix string, value T) {
 		metric := scope.Metrics().AppendEmpty()
-		metric.SetName((*aggregate).name + sufix)
-		metric.SetUnit((*aggregate).unit)
-		metric.SetDescription((*aggregate).description)
+		metric.SetName(aggregate.name + sufix)
+		metric.SetUnit(aggregate.unit)
+		metric.SetDescription(aggregate.description)
 		gauge := metric.SetEmptyGauge()
 		gauge_dp := gauge.DataPoints().AppendEmpty()
 		gauge_dp.SetStartTimestamp(aggregate.startTS)
 		gauge_dp.SetTimestamp(aggregationTS)
-		(*aggregate).attributes.CopyTo(gauge_dp.Attributes())
+		aggregate.attributes.CopyTo(gauge_dp.Attributes())
 		switch v := any(value).(type) {
 		case int64:
 			gauge_dp.SetIntValue(v)
@@ -73,20 +73,20 @@ func CreateGaugeMetrics[T GaugeValue](scope pmetric.ScopeMetrics, aggregate *Gau
 			gauge_dp.SetDoubleValue(v)
 		}
 	}
-	(*aggregate).average = (*aggregate).sum / T((*aggregate).count)
+	aggregate.average = aggregate.sum / T(aggregate.count)
 
-	createSpecificMetric(scope, aggregate, "_gauge_avg", (*aggregate).average)
-	createSpecificMetric(scope, aggregate, "_gauge_max", (*aggregate).max)
-	createSpecificMetric(scope, aggregate, "_gauge_min", (*aggregate).min)
-	createSpecificMetric(scope, aggregate, "_gauge_sum", (*aggregate).sum)
+	createSpecificMetric(scope, aggregate, "_gauge_avg", aggregate.average)
+	createSpecificMetric(scope, aggregate, "_gauge_max", aggregate.max)
+	createSpecificMetric(scope, aggregate, "_gauge_min", aggregate.min)
+	createSpecificMetric(scope, aggregate, "_gauge_sum", aggregate.sum)
 
 	metric := scope.Metrics().AppendEmpty()
-	metric.SetName((*aggregate).name + "_gauge_count")
-	metric.SetDescription((*aggregate).description)
+	metric.SetName(aggregate.name + "_gauge_count")
+	metric.SetDescription(aggregate.description)
 	gauge := metric.SetEmptyGauge()
 	gauge_dp := gauge.DataPoints().AppendEmpty()
-	(*aggregate).attributes.CopyTo(gauge_dp.Attributes())
-	gauge_dp.SetIntValue((*aggregate).count)
+	aggregate.attributes.CopyTo(gauge_dp.Attributes())
+	gauge_dp.SetIntValue(aggregate.count)
 	gauge_dp.SetStartTimestamp(aggregate.startTS)
 	gauge_dp.SetTimestamp(aggregationTS)
 }

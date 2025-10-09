@@ -46,40 +46,40 @@ func CreateHistogramAggregate(metric pmetric.Metric, value pmetric.HistogramData
 }
 
 func AggregateHistogram(aggregate *HistogramAggregate, value pmetric.HistogramDataPoint) int16 {
-	switch (*aggregate).aggregation {
+	switch aggregate.aggregation {
 	case pmetric.AggregationTemporalityCumulative:
-		if (*aggregate).lastTS < value.Timestamp() {
-			(*aggregate).count = value.Count()
-			(*aggregate).sum = value.Sum()
-			(*aggregate).max = value.Max()
-			(*aggregate).min = value.Min()
-			(*aggregate).bucketCounts = value.BucketCounts().AsRaw()
-			(*aggregate).explicitBounds = value.ExplicitBounds().AsRaw()
-			if value.StartTimestamp() < (*aggregate).startTS {
-				(*aggregate).startTS = value.StartTimestamp()
+		if aggregate.lastTS < value.Timestamp() {
+			aggregate.count = value.Count()
+			aggregate.sum = value.Sum()
+			aggregate.max = value.Max()
+			aggregate.min = value.Min()
+			aggregate.bucketCounts = value.BucketCounts().AsRaw()
+			aggregate.explicitBounds = value.ExplicitBounds().AsRaw()
+			if value.StartTimestamp() < aggregate.startTS {
+				aggregate.startTS = value.StartTimestamp()
 			}
-			(*aggregate).lastTS = value.Timestamp()
+			aggregate.lastTS = value.Timestamp()
 		}
 	case pmetric.AggregationTemporalityDelta:
-		if slices.Equal((*aggregate).explicitBounds, value.ExplicitBounds().AsRaw()) &&
-			len((*aggregate).bucketCounts) == value.BucketCounts().Len() {
+		if slices.Equal(aggregate.explicitBounds, value.ExplicitBounds().AsRaw()) &&
+			len(aggregate.bucketCounts) == value.BucketCounts().Len() {
 			for i := 0; i < value.BucketCounts().Len(); i++ {
-				(*aggregate).bucketCounts[i] = (*aggregate).bucketCounts[i] + value.BucketCounts().At(i)
+				aggregate.bucketCounts[i] = aggregate.bucketCounts[i] + value.BucketCounts().At(i)
 			}
 		} else {
 			return 1
 		}
-		(*aggregate).count += value.Count()
-		(*aggregate).sum += value.Sum()
-		if (*aggregate).max < value.Max() {
-			(*aggregate).max = value.Max()
+		aggregate.count += value.Count()
+		aggregate.sum += value.Sum()
+		if aggregate.max < value.Max() {
+			aggregate.max = value.Max()
 		}
-		if (*aggregate).min > value.Min() {
-			(*aggregate).min = value.Min()
+		if aggregate.min > value.Min() {
+			aggregate.min = value.Min()
 		}
-		(*aggregate).explicitBounds = value.ExplicitBounds().AsRaw()
-		if value.StartTimestamp() < (*aggregate).startTS {
-			(*aggregate).startTS = value.StartTimestamp()
+		aggregate.explicitBounds = value.ExplicitBounds().AsRaw()
+		if value.StartTimestamp() < aggregate.startTS {
+			aggregate.startTS = value.StartTimestamp()
 		}
 	}
 	return 0
@@ -87,25 +87,25 @@ func AggregateHistogram(aggregate *HistogramAggregate, value pmetric.HistogramDa
 
 func CreateHistogramMetrics(scope pmetric.ScopeMetrics, aggregate *HistogramAggregate, aggregationTS pcommon.Timestamp) {
 	metric_value := scope.Metrics().AppendEmpty()
-	metric_value.SetName((*aggregate).name)
-	metric_value.SetUnit((*aggregate).unit)
-	metric_value.SetDescription((*aggregate).description)
+	metric_value.SetName(aggregate.name)
+	metric_value.SetUnit(aggregate.unit)
+	metric_value.SetDescription(aggregate.description)
 	histogram := metric_value.SetEmptyHistogram()
-	histogram.SetAggregationTemporality((*aggregate).aggregation)
+	histogram.SetAggregationTemporality(aggregate.aggregation)
 	histogram_dp := histogram.DataPoints().AppendEmpty()
-	histogram_dp.SetStartTimestamp((*aggregate).startTS)
+	histogram_dp.SetStartTimestamp(aggregate.startTS)
 	histogram_dp.SetTimestamp(aggregationTS)
-	(*aggregate).attributes.CopyTo(histogram_dp.Attributes())
-	histogram_dp.SetCount((*aggregate).count)
-	histogram_dp.SetSum((*aggregate).sum)
-	histogram_dp.SetMax((*aggregate).max)
-	histogram_dp.SetMin((*aggregate).min)
+	aggregate.attributes.CopyTo(histogram_dp.Attributes())
+	histogram_dp.SetCount(aggregate.count)
+	histogram_dp.SetSum(aggregate.sum)
+	histogram_dp.SetMax(aggregate.max)
+	histogram_dp.SetMin(aggregate.min)
 
-	for i := 0; i < len((*aggregate).explicitBounds); i++ {
-		histogram_dp.ExplicitBounds().Append((*aggregate).explicitBounds[i])
+	for i := 0; i < len(aggregate.explicitBounds); i++ {
+		histogram_dp.ExplicitBounds().Append(aggregate.explicitBounds[i])
 	}
 
-	for i := 0; i < len((*aggregate).bucketCounts); i++ {
-		histogram_dp.BucketCounts().Append((*aggregate).bucketCounts[i])
+	for i := 0; i < len(aggregate.bucketCounts); i++ {
+		histogram_dp.BucketCounts().Append(aggregate.bucketCounts[i])
 	}
 }
