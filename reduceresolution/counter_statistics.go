@@ -63,7 +63,7 @@ func CreateCounterMetrics[T GaugeValue](scope pmetric.ScopeMetrics, aggregate *C
 	counter := metric_value.SetEmptySum()
 	counter.SetAggregationTemporality((*aggregate).aggregation)
 	counter_dp := counter.DataPoints().AppendEmpty()
-	counter_dp.SetStartTimestamp(aggregate.startTS)
+	counter_dp.SetStartTimestamp((*aggregate).startTS)
 	counter_dp.SetTimestamp(aggregationTS)
 	(*aggregate).attributes.CopyTo(counter_dp.Attributes())
 	switch v := any((*aggregate).value).(type) {
