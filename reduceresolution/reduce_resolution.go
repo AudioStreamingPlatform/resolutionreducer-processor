@@ -86,6 +86,23 @@ func (p *ReduceResolution) ProcessMetrics(_ context.Context, metrics pmetric.Met
 						}
 					}
 
+				// Deal with all the histogram buckets
+				case pmetric.MetricTypeHistogram:
+					for l := 0; l < metric.Histogram().DataPoints().Len(); l++ {
+						histogram := metric.Histogram().DataPoints().At(l)
+						key := CreateMetricKey(metric, histogram.Attributes())
+
+						metricAggregate, ok := scopeContainer.histogramAggregate[key]
+						if !ok {
+							scopeContainer.histogramAggregate[key] = CreateHistogramAggregate(metric, histogram)
+						} else {
+							if AggregateHistogram(metricAggregate, histogram) != 0 {
+								p.Logger.Warn("Histogram datapoint dropped due to mismatch")
+							}
+						}
+
+					}
+
 				// For any non implemented metrics
 				default:
 					scopeContainer.leftoverMetric = append(scopeContainer.leftoverMetric, metric)
@@ -120,6 +137,10 @@ func (p *ReduceResolution) ProcessMetrics(_ context.Context, metrics pmetric.Met
 		for _, metricAggregate := range scopeContainer.floatCounterAggregate {
 			CreateCounterMetrics(scope, metricAggregate, aggregationTimeStamp)
 		}
+		for _, metricAggregate := range scopeContainer.histogramAggregate {
+			CreateHistogramMetrics(scope, metricAggregate, aggregationTimeStamp)
+		}
+
 		for _, metric := range scopeContainer.leftoverMetric {
 			metric.MoveTo(scope.Metrics().AppendEmpty())
 		}

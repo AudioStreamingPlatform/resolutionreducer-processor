@@ -15,8 +15,9 @@ import (
 )
 
 func TestValidateIntCounterAggregation(t *testing.T) {
+	logger, _ := zap.NewDevelopment()
 	var processor *ReduceResolution = &ReduceResolution{
-		Logger: &zap.Logger{},
+		Logger: logger,
 	}
 
 	var mainMetrics pmetric.Metrics = CreateArgument(
@@ -41,6 +42,7 @@ func TestValidateIntCounterAggregation(t *testing.T) {
 									},
 								},
 							},
+							[]HistogramArg{},
 						},
 					},
 				},
@@ -73,8 +75,9 @@ func TestValidateIntCounterAggregation(t *testing.T) {
 }
 
 func TestValidate2CounterAggregationDifferentScope(t *testing.T) {
+	logger, _ := zap.NewDevelopment()
 	var processor *ReduceResolution = &ReduceResolution{
-		Logger: &zap.Logger{},
+		Logger: logger,
 	}
 
 	var mainMetrics pmetric.Metrics = CreateArgument(
@@ -99,6 +102,7 @@ func TestValidate2CounterAggregationDifferentScope(t *testing.T) {
 									},
 								},
 							},
+							[]HistogramArg{},
 						},
 						{
 							"testscope",
@@ -117,6 +121,7 @@ func TestValidate2CounterAggregationDifferentScope(t *testing.T) {
 									},
 								},
 							},
+							[]HistogramArg{},
 						},
 					},
 				},
@@ -149,8 +154,9 @@ func TestValidate2CounterAggregationDifferentScope(t *testing.T) {
 }
 
 func TestValidate2CounterAggregationSameScope(t *testing.T) {
+	logger, _ := zap.NewDevelopment()
 	var processor *ReduceResolution = &ReduceResolution{
-		Logger: &zap.Logger{},
+		Logger: logger,
 	}
 
 	var mainMetrics pmetric.Metrics = CreateArgument(
@@ -175,6 +181,7 @@ func TestValidate2CounterAggregationSameScope(t *testing.T) {
 									},
 								},
 							},
+							[]HistogramArg{},
 						},
 					},
 				},
@@ -207,8 +214,9 @@ func TestValidate2CounterAggregationSameScope(t *testing.T) {
 }
 
 func TestValidate2DoubleCounterAggregationSameScope(t *testing.T) {
+	logger, _ := zap.NewDevelopment()
 	var processor *ReduceResolution = &ReduceResolution{
-		Logger: &zap.Logger{},
+		Logger: logger,
 	}
 
 	var mainMetrics pmetric.Metrics = CreateArgument(
@@ -233,6 +241,7 @@ func TestValidate2DoubleCounterAggregationSameScope(t *testing.T) {
 								},
 							},
 							[]CounterArg[int64]{},
+							[]HistogramArg{},
 						},
 					},
 				},
@@ -265,8 +274,9 @@ func TestValidate2DoubleCounterAggregationSameScope(t *testing.T) {
 }
 
 func TestValidate2CounterAggregationDiffScopeDiffName(t *testing.T) {
+	logger, _ := zap.NewDevelopment()
 	var processor *ReduceResolution = &ReduceResolution{
-		Logger: &zap.Logger{},
+		Logger: logger,
 	}
 
 	var mainMetrics pmetric.Metrics = CreateArgument(
@@ -291,6 +301,7 @@ func TestValidate2CounterAggregationDiffScopeDiffName(t *testing.T) {
 									},
 								},
 							},
+							[]HistogramArg{},
 						},
 						{
 							"testscope2",
@@ -309,6 +320,7 @@ func TestValidate2CounterAggregationDiffScopeDiffName(t *testing.T) {
 									},
 								},
 							},
+							[]HistogramArg{},
 						},
 					},
 				},
@@ -361,8 +373,9 @@ func TestValidate2CounterAggregationDiffScopeDiffName(t *testing.T) {
 }
 
 func TestValidate2CounterAggregationDiffScopeDiffVersion(t *testing.T) {
+	logger, _ := zap.NewDevelopment()
 	var processor *ReduceResolution = &ReduceResolution{
-		Logger: &zap.Logger{},
+		Logger: logger,
 	}
 
 	var mainMetrics pmetric.Metrics = CreateArgument(
@@ -387,6 +400,7 @@ func TestValidate2CounterAggregationDiffScopeDiffVersion(t *testing.T) {
 									},
 								},
 							},
+							[]HistogramArg{},
 						},
 						{
 							"testscope",
@@ -405,6 +419,7 @@ func TestValidate2CounterAggregationDiffScopeDiffVersion(t *testing.T) {
 									},
 								},
 							},
+							[]HistogramArg{},
 						},
 					},
 				},

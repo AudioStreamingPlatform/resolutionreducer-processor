@@ -15,8 +15,9 @@ import (
 )
 
 func TestValidateIntGaugeAggregation(t *testing.T) {
+	logger, _ := zap.NewDevelopment()
 	var processor *ReduceResolution = &ReduceResolution{
-		Logger: &zap.Logger{},
+		Logger: logger,
 	}
 
 	var mainMetrics pmetric.Metrics = CreateArgument(
@@ -40,6 +41,7 @@ func TestValidateIntGaugeAggregation(t *testing.T) {
 							},
 							[]CounterArg[float64]{},
 							[]CounterArg[int64]{},
+							[]HistogramArg{},
 						},
 					},
 				},
@@ -86,8 +88,9 @@ func TestValidateIntGaugeAggregation(t *testing.T) {
 }
 
 func TestValidate2GaugeAggregationDifferentScope(t *testing.T) {
+	logger, _ := zap.NewDevelopment()
 	var processor *ReduceResolution = &ReduceResolution{
-		Logger: &zap.Logger{},
+		Logger: logger,
 	}
 
 	var mainMetrics pmetric.Metrics = CreateArgument(
@@ -111,6 +114,7 @@ func TestValidate2GaugeAggregationDifferentScope(t *testing.T) {
 							},
 							[]CounterArg[float64]{},
 							[]CounterArg[int64]{},
+							[]HistogramArg{},
 						},
 						{
 							"testscope",
@@ -128,6 +132,7 @@ func TestValidate2GaugeAggregationDifferentScope(t *testing.T) {
 							},
 							[]CounterArg[float64]{},
 							[]CounterArg[int64]{},
+							[]HistogramArg{},
 						},
 					},
 				},
@@ -174,8 +179,9 @@ func TestValidate2GaugeAggregationDifferentScope(t *testing.T) {
 }
 
 func TestValidate2GaugeAggregationSameScope(t *testing.T) {
+	logger, _ := zap.NewDevelopment()
 	var processor *ReduceResolution = &ReduceResolution{
-		Logger: &zap.Logger{},
+		Logger: logger,
 	}
 
 	var mainMetrics pmetric.Metrics = CreateArgument(
@@ -199,6 +205,7 @@ func TestValidate2GaugeAggregationSameScope(t *testing.T) {
 							},
 							[]CounterArg[float64]{},
 							[]CounterArg[int64]{},
+							[]HistogramArg{},
 						},
 					},
 				},
@@ -246,8 +253,9 @@ func TestValidate2GaugeAggregationSameScope(t *testing.T) {
 }
 
 func TestValidate2GaugeDoubleAggregationSameScope(t *testing.T) {
+	logger, _ := zap.NewDevelopment()
 	var processor *ReduceResolution = &ReduceResolution{
-		Logger: &zap.Logger{},
+		Logger: logger,
 	}
 
 	var mainMetrics pmetric.Metrics = CreateArgument(
@@ -271,6 +279,7 @@ func TestValidate2GaugeDoubleAggregationSameScope(t *testing.T) {
 							[]GaugeArg[int64]{},
 							[]CounterArg[float64]{},
 							[]CounterArg[int64]{},
+							[]HistogramArg{},
 						},
 					},
 				},
@@ -318,8 +327,9 @@ func TestValidate2GaugeDoubleAggregationSameScope(t *testing.T) {
 }
 
 func TestValidate2GaugeAggregationDiffScopeDiffName(t *testing.T) {
+	logger, _ := zap.NewDevelopment()
 	var processor *ReduceResolution = &ReduceResolution{
-		Logger: &zap.Logger{},
+		Logger: logger,
 	}
 
 	var mainMetrics pmetric.Metrics = CreateArgument(
@@ -343,6 +353,7 @@ func TestValidate2GaugeAggregationDiffScopeDiffName(t *testing.T) {
 							},
 							[]CounterArg[float64]{},
 							[]CounterArg[int64]{},
+							[]HistogramArg{},
 						},
 						{
 							"testscope2",
@@ -360,6 +371,7 @@ func TestValidate2GaugeAggregationDiffScopeDiffName(t *testing.T) {
 							},
 							[]CounterArg[float64]{},
 							[]CounterArg[int64]{},
+							[]HistogramArg{},
 						},
 					},
 				},
@@ -438,8 +450,9 @@ func TestValidate2GaugeAggregationDiffScopeDiffName(t *testing.T) {
 }
 
 func TestValidate2GaugeAggregationDiffScopeDiffVersion(t *testing.T) {
+	logger, _ := zap.NewDevelopment()
 	var processor *ReduceResolution = &ReduceResolution{
-		Logger: &zap.Logger{},
+		Logger: logger,
 	}
 
 	var mainMetrics pmetric.Metrics = CreateArgument(
@@ -463,6 +476,7 @@ func TestValidate2GaugeAggregationDiffScopeDiffVersion(t *testing.T) {
 							},
 							[]CounterArg[float64]{},
 							[]CounterArg[int64]{},
+							[]HistogramArg{},
 						},
 						{
 							"testscope",
@@ -480,6 +494,7 @@ func TestValidate2GaugeAggregationDiffScopeDiffVersion(t *testing.T) {
 							},
 							[]CounterArg[float64]{},
 							[]CounterArg[int64]{},
+							[]HistogramArg{},
 						},
 					},
 				},
