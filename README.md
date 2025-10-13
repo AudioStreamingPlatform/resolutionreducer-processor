@@ -39,6 +39,9 @@ When a gauge is received, it is converted into 5 different gauges, represented a
 ### Counter and UpDownCounter
 Both the Counter and the UpDownCounter are just summed together and emitted with a single value. The name of the counter or the UpDownCounter are not changed.
 
+### Linear Histogram
+Just like the Counter, the Linear Histogram is summed together and emitted a single set of buckets. The name of the Histogram is not changed.
+
 ## How to work locally
 
 Install the go version 1.20.12 locally.
