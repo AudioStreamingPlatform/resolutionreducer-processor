@@ -5,11 +5,21 @@
 package reduceresolution
 
 import (
-	"slices"
-
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/pmetric"
 )
+
+func CompareFloat64SlicesEqual(a, b []float64) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
+}
 
 type HistogramAggregate struct {
 	count          uint64
@@ -61,7 +71,7 @@ func AggregateHistogram(aggregate *HistogramAggregate, value pmetric.HistogramDa
 			aggregate.lastTS = value.Timestamp()
 		}
 	case pmetric.AggregationTemporalityDelta:
-		if slices.Equal(aggregate.explicitBounds, value.ExplicitBounds().AsRaw()) &&
+		if CompareFloat64SlicesEqual(aggregate.explicitBounds, value.ExplicitBounds().AsRaw()) &&
 			len(aggregate.bucketCounts) == value.BucketCounts().Len() {
 			for i := 0; i < value.BucketCounts().Len(); i++ {
 				aggregate.bucketCounts[i] = aggregate.bucketCounts[i] + value.BucketCounts().At(i)
