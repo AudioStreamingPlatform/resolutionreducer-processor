@@ -78,7 +78,6 @@ func CreateGaugeMetrics[T GaugeValue](scope pmetric.ScopeMetrics, aggregate *Gau
 	createSpecificMetric(scope, aggregate, "_gauge_avg", aggregate.average)
 	createSpecificMetric(scope, aggregate, "_gauge_max", aggregate.max)
 	createSpecificMetric(scope, aggregate, "_gauge_min", aggregate.min)
-	createSpecificMetric(scope, aggregate, "_gauge_sum", aggregate.sum)
 
 	metric := scope.Metrics().AppendEmpty()
 	metric.SetName(aggregate.name + "_gauge_count")
