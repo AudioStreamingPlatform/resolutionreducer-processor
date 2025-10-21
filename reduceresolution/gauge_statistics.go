@@ -75,17 +75,11 @@ func CreateGaugeMetrics[T GaugeValue](scope pmetric.ScopeMetrics, aggregate *Gau
 	}
 	aggregate.average = aggregate.sum / T(aggregate.count)
 
-	createSpecificMetric(scope, aggregate, "_gauge_avg", aggregate.average)
+	// The average is commented in order to reduce the number of metrics generated
+	// from one gauge, however this show an example on the gauge can be broken down
+	// into more or less metrics depending on what is required
+	//  createSpecificMetric(scope, aggregate, "_gauge_avg", aggregate.average)
 	createSpecificMetric(scope, aggregate, "_gauge_max", aggregate.max)
 	createSpecificMetric(scope, aggregate, "_gauge_min", aggregate.min)
 
-	metric := scope.Metrics().AppendEmpty()
-	metric.SetName(aggregate.name + "_gauge_count")
-	metric.SetDescription(aggregate.description)
-	gauge := metric.SetEmptyGauge()
-	gauge_dp := gauge.DataPoints().AppendEmpty()
-	aggregate.attributes.CopyTo(gauge_dp.Attributes())
-	gauge_dp.SetIntValue(aggregate.count)
-	gauge_dp.SetStartTimestamp(aggregate.startTS)
-	gauge_dp.SetTimestamp(aggregationTS)
 }

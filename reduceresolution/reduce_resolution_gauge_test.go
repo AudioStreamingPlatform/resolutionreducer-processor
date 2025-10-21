@@ -53,10 +53,8 @@ func TestValidateIntGaugeAggregation(t *testing.T) {
 		finalMetrics, error := processor.ProcessMetrics(nil, mainMetrics)
 
 		assert.NoError(t, error)
-		var count bool = false
 		var max bool = false
 		var min bool = false
-		var avg bool = false
 
 		for i := 0; i < finalMetrics.ResourceMetrics().Len(); i++ {
 			resourceMetric := finalMetrics.ResourceMetrics().At(i)
@@ -68,20 +66,14 @@ func TestValidateIntGaugeAggregation(t *testing.T) {
 					metric := scope.Metrics().At(k)
 					assert.Equal(t, pmetric.MetricTypeGauge, metric.Type())
 					switch metric.Name() {
-					case "testmetric_gauge_count":
-						ValidateIntGauge(t, metric, &count, 1, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 0, 0, time.UTC)))
 					case "testmetric_gauge_max":
 						ValidateIntGauge(t, metric, &max, 3, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 0, 0, time.UTC)))
 					case "testmetric_gauge_min":
 						ValidateIntGauge(t, metric, &min, 3, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 0, 0, time.UTC)))
-					case "testmetric_gauge_avg":
-						ValidateIntGauge(t, metric, &avg, 3, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 0, 0, time.UTC)))
 					}
 				}
-				assert.True(t, count)
 				assert.True(t, max)
 				assert.True(t, min)
-				assert.True(t, avg)
 			}
 		}
 	})
@@ -144,10 +136,8 @@ func TestValidate2GaugeAggregationDifferentScope(t *testing.T) {
 		finalMetrics, error := processor.ProcessMetrics(nil, mainMetrics)
 
 		assert.NoError(t, error)
-		var count bool = false
 		var max bool = false
 		var min bool = false
-		var avg bool = false
 
 		for i := 0; i < finalMetrics.ResourceMetrics().Len(); i++ {
 			resourceMetric := finalMetrics.ResourceMetrics().At(i)
@@ -159,20 +149,14 @@ func TestValidate2GaugeAggregationDifferentScope(t *testing.T) {
 					metric := scope.Metrics().At(k)
 					assert.Equal(t, pmetric.MetricTypeGauge, metric.Type())
 					switch metric.Name() {
-					case "testmetric_gauge_count":
-						ValidateIntGauge(t, metric, &count, 2, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 0, 0, time.UTC)))
 					case "testmetric_gauge_max":
 						ValidateIntGauge(t, metric, &max, 5, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 0, 0, time.UTC)))
 					case "testmetric_gauge_min":
 						ValidateIntGauge(t, metric, &min, 3, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 0, 0, time.UTC)))
-					case "testmetric_gauge_avg":
-						ValidateIntGauge(t, metric, &avg, 4, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 0, 0, time.UTC)))
 					}
 				}
-				assert.True(t, count)
 				assert.True(t, max)
 				assert.True(t, min)
-				assert.True(t, avg)
 			}
 		}
 	})
@@ -217,10 +201,8 @@ func TestValidate2GaugeAggregationSameScope(t *testing.T) {
 		finalMetrics, error := processor.ProcessMetrics(nil, mainMetrics)
 
 		assert.NoError(t, error)
-		var count bool = false
 		var max bool = false
 		var min bool = false
-		var avg bool = false
 
 		for i := 0; i < finalMetrics.ResourceMetrics().Len(); i++ {
 			resourceMetric := finalMetrics.ResourceMetrics().At(i)
@@ -233,20 +215,14 @@ func TestValidate2GaugeAggregationSameScope(t *testing.T) {
 					metric := scope.Metrics().At(k)
 					assert.Equal(t, pmetric.MetricTypeGauge, metric.Type())
 					switch metric.Name() {
-					case "testmetric_gauge_count":
-						ValidateIntGauge(t, metric, &count, 2, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)))
 					case "testmetric_gauge_max":
 						ValidateIntGauge(t, metric, &max, 5, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)))
 					case "testmetric_gauge_min":
 						ValidateIntGauge(t, metric, &min, 3, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)))
-					case "testmetric_gauge_avg":
-						ValidateIntGauge(t, metric, &avg, 4, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)))
 					}
 				}
-				assert.True(t, count)
 				assert.True(t, max)
 				assert.True(t, min)
-				assert.True(t, avg)
 			}
 		}
 	})
@@ -291,10 +267,8 @@ func TestValidate2GaugeDoubleAggregationSameScope(t *testing.T) {
 		finalMetrics, error := processor.ProcessMetrics(nil, mainMetrics)
 
 		assert.NoError(t, error)
-		var count bool = false
 		var max bool = false
 		var min bool = false
-		var avg bool = false
 
 		for i := 0; i < finalMetrics.ResourceMetrics().Len(); i++ {
 			resourceMetric := finalMetrics.ResourceMetrics().At(i)
@@ -307,20 +281,14 @@ func TestValidate2GaugeDoubleAggregationSameScope(t *testing.T) {
 					metric := scope.Metrics().At(k)
 					assert.Equal(t, pmetric.MetricTypeGauge, metric.Type())
 					switch metric.Name() {
-					case "testmetric_gauge_count":
-						ValidateIntGauge(t, metric, &count, 2, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)))
 					case "testmetric_gauge_max":
 						ValidateDoubleGauge(t, metric, &max, 5.0, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)))
 					case "testmetric_gauge_min":
 						ValidateDoubleGauge(t, metric, &min, 3.0, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)))
-					case "testmetric_gauge_avg":
-						ValidateDoubleGauge(t, metric, &avg, 4.0, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)))
 					}
 				}
-				assert.True(t, count)
 				assert.True(t, max)
 				assert.True(t, min)
-				assert.True(t, avg)
 			}
 		}
 	})
@@ -394,53 +362,37 @@ func TestValidate2GaugeAggregationDiffScopeDiffName(t *testing.T) {
 				case "testscope":
 					assert.False(t, scope1)
 					scope1 = true
-					var count bool = false
 					var max bool = false
 					var min bool = false
-					var avg bool = false
 					for k := 0; k < scope.Metrics().Len(); k++ {
 						metric := scope.Metrics().At(k)
 						assert.Equal(t, pmetric.MetricTypeGauge, metric.Type())
 						switch metric.Name() {
-						case "testmetric_gauge_count":
-							ValidateIntGauge(t, metric, &count, 1, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 20, 0, time.UTC)))
 						case "testmetric_gauge_max":
 							ValidateIntGauge(t, metric, &max, 3, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 20, 0, time.UTC)))
 						case "testmetric_gauge_min":
 							ValidateIntGauge(t, metric, &min, 3, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 20, 0, time.UTC)))
-						case "testmetric_gauge_avg":
-							ValidateIntGauge(t, metric, &avg, 3, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 20, 0, time.UTC)))
 						}
 					}
-					assert.True(t, count)
 					assert.True(t, max)
 					assert.True(t, min)
-					assert.True(t, avg)
 				case "testscope2":
 					assert.False(t, scope2)
 					scope2 = true
-					var count bool = false
 					var max bool = false
 					var min bool = false
-					var avg bool = false
 					for k := 0; k < scope.Metrics().Len(); k++ {
 						metric := scope.Metrics().At(k)
 						assert.Equal(t, pmetric.MetricTypeGauge, metric.Type())
 						switch metric.Name() {
-						case "testmetric_gauge_count":
-							ValidateIntGauge(t, metric, &count, 1, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)))
 						case "testmetric_gauge_max":
 							ValidateIntGauge(t, metric, &max, 5, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)))
 						case "testmetric_gauge_min":
 							ValidateIntGauge(t, metric, &min, 5, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)))
-						case "testmetric_gauge_avg":
-							ValidateIntGauge(t, metric, &avg, 5, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)))
 						}
 					}
-					assert.True(t, count)
 					assert.True(t, max)
 					assert.True(t, min)
-					assert.True(t, avg)
 				}
 			}
 		}
@@ -518,54 +470,38 @@ func TestValidate2GaugeAggregationDiffScopeDiffVersion(t *testing.T) {
 					assert.Equal(t, "testscope", scope.Scope().Name())
 					assert.False(t, scope1)
 					scope1 = true
-					var count bool = false
 					var max bool = false
 					var min bool = false
-					var avg bool = false
 					for k := 0; k < scope.Metrics().Len(); k++ {
 						metric := scope.Metrics().At(k)
 						assert.Equal(t, pmetric.MetricTypeGauge, metric.Type())
 						switch metric.Name() {
-						case "testmetric_gauge_count":
-							ValidateIntGauge(t, metric, &count, 1, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)))
 						case "testmetric_gauge_max":
 							ValidateIntGauge(t, metric, &max, 3, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)))
 						case "testmetric_gauge_min":
 							ValidateIntGauge(t, metric, &min, 3, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)))
-						case "testmetric_gauge_avg":
-							ValidateIntGauge(t, metric, &avg, 3, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)))
 						}
 					}
-					assert.True(t, count)
 					assert.True(t, max)
 					assert.True(t, min)
-					assert.True(t, avg)
 				case "2.0":
 					assert.Equal(t, "testscope", scope.Scope().Name())
 					assert.False(t, scope2)
 					scope2 = true
-					var count bool = false
 					var max bool = false
 					var min bool = false
-					var avg bool = false
 					for k := 0; k < scope.Metrics().Len(); k++ {
 						metric := scope.Metrics().At(k)
 						assert.Equal(t, pmetric.MetricTypeGauge, metric.Type())
 						switch metric.Name() {
-						case "testmetric_gauge_count":
-							ValidateIntGauge(t, metric, &count, 1, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 20, 0, time.UTC)))
 						case "testmetric_gauge_max":
 							ValidateIntGauge(t, metric, &max, 5, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 20, 0, time.UTC)))
 						case "testmetric_gauge_min":
 							ValidateIntGauge(t, metric, &min, 5, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 20, 0, time.UTC)))
-						case "testmetric_gauge_avg":
-							ValidateIntGauge(t, metric, &avg, 5, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 20, 0, time.UTC)))
 						}
 					}
-					assert.True(t, count)
 					assert.True(t, max)
 					assert.True(t, min)
-					assert.True(t, avg)
 				}
 			}
 		}
