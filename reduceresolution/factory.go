@@ -33,8 +33,17 @@ func createMetricsProcessor(
 	config component.Config,
 	nextConsumer consumer.Metrics,
 ) (processor.Metrics, error) {
+	c := config.(*Config)
+
+	var processedConfig ProcessedConfig
+	processedConfig.RealMaxMinAggregation = map[string]bool{}
+	for i := 0; i < len(c.RealMaxMinAggregation); i++ {
+		processedConfig.RealMaxMinAggregation[c.RealMaxMinAggregation[i]] = true
+	}
+
 	logProcessor := &ReduceResolution{
 		Logger: settings.Logger,
+		Config: processedConfig,
 	}
 
 	return processorhelper.NewMetricsProcessor(

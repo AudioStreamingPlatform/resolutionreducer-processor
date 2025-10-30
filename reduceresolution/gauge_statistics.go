@@ -13,12 +13,21 @@ type GaugeValue interface {
 	int64 | float64
 }
 
+func Abs[T GaugeValue](value T) T {
+	if value < 0 {
+		return -value
+	}
+	return value
+}
+
 type GaugeAggregate[T GaugeValue] struct {
 	count       int64
 	average     T
 	sum         T
 	max         T
 	min         T
+	max_abs     T
+	min_abs     T
 	name        string
 	description string
 	unit        string
@@ -31,6 +40,8 @@ func CreateGaugeAggregate[T GaugeValue](metric pmetric.Metric, attributes pcommo
 		count:       1,
 		max:         value,
 		min:         value,
+		max_abs:     Abs(value),
+		min_abs:     Abs(value),
 		sum:         value,
 		name:        metric.Name(),
 		description: metric.Description(),
@@ -49,12 +60,21 @@ func AggregateGauge[T GaugeValue](aggregate *GaugeAggregate[T], startTS pcommon.
 	if aggregate.max < value {
 		aggregate.max = value
 	}
+
+	if aggregate.min_abs > Abs(value) {
+		aggregate.min_abs = Abs(value)
+	}
+
+	if aggregate.max_abs < Abs(value) {
+		aggregate.max_abs = Abs(value)
+	}
+
 	if startTS < aggregate.startTS {
 		aggregate.startTS = startTS
 	}
 }
 
-func CreateGaugeMetrics[T GaugeValue](scope pmetric.ScopeMetrics, aggregate *GaugeAggregate[T], aggregationTS pcommon.Timestamp) {
+func CreateGaugeMetrics[T GaugeValue](scope pmetric.ScopeMetrics, aggregate *GaugeAggregate[T], aggregationTS pcommon.Timestamp, Config ProcessedConfig) {
 
 	createSpecificMetric := func(scope pmetric.ScopeMetrics, aggregate *GaugeAggregate[T], sufix string, value T) {
 		metric := scope.Metrics().AppendEmpty()
@@ -79,7 +99,13 @@ func CreateGaugeMetrics[T GaugeValue](scope pmetric.ScopeMetrics, aggregate *Gau
 	// from one gauge, however this show an example on the gauge can be broken down
 	// into more or less metrics depending on what is required
 	//  createSpecificMetric(scope, aggregate, "_gauge_avg", aggregate.average)
-	createSpecificMetric(scope, aggregate, "_gauge_max", aggregate.max)
-	createSpecificMetric(scope, aggregate, "_gauge_min", aggregate.min)
+
+	if Config.RealMaxMinAggregation[aggregate.name] {
+		createSpecificMetric(scope, aggregate, "_gauge_max", aggregate.max)
+		createSpecificMetric(scope, aggregate, "_gauge_min", aggregate.min)
+	} else {
+		createSpecificMetric(scope, aggregate, "_gauge_abs_max", aggregate.max_abs)
+		createSpecificMetric(scope, aggregate, "_gauge_abs_min", aggregate.min_abs)
+	}
 
 }
