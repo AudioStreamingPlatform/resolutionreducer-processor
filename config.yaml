@@ -14,7 +14,9 @@ processors:
     timeout: 30s
   
   reduceresolution:
-  
+    real-max-min-aggregation:
+      - testmetric
+      - testmetric2
 
 exporters:
   debug:

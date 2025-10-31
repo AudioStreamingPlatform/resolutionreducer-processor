@@ -15,6 +15,7 @@ import (
 
 type ReduceResolution struct {
 	Logger *zap.Logger
+	Config ProcessedConfig
 }
 
 // ProcessMetrics logs information about incoming metrics
@@ -22,7 +23,6 @@ func (p *ReduceResolution) ProcessMetrics(_ context.Context, metrics pmetric.Met
 	if metrics.ResourceMetrics().Len() == 0 {
 		return metrics, nil
 	}
-
 	var aggregationTimeStamp pcommon.Timestamp = pcommon.NewTimestampFromTime(time.Now())
 
 	var scopesMaps map[string]*ScopeContainer = make(map[string]*ScopeContainer)
@@ -125,10 +125,10 @@ func (p *ReduceResolution) ProcessMetrics(_ context.Context, metrics pmetric.Met
 		scope.Scope().SetVersion(scopeContainer.scopeVersion)
 
 		for _, metricAggregate := range scopeContainer.intGaugeAggregate {
-			CreateGaugeMetrics(scope, metricAggregate, aggregationTimeStamp)
+			CreateGaugeMetrics(scope, metricAggregate, aggregationTimeStamp, p.Config)
 		}
 		for _, metricAggregate := range scopeContainer.floatGaugeAggregate {
-			CreateGaugeMetrics(scope, metricAggregate, aggregationTimeStamp)
+			CreateGaugeMetrics(scope, metricAggregate, aggregationTimeStamp, p.Config)
 		}
 
 		for _, metricAggregate := range scopeContainer.intCounterAggregate {
