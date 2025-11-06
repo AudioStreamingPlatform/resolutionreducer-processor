@@ -778,7 +778,7 @@ func TestValidate2GaugeAggregationAbsMaxMinOnlyNegatives(t *testing.T) {
 					assert.Equal(t, pmetric.MetricTypeGauge, metric.Type())
 					switch metric.Name() {
 					case "testmetric_gauge_abs_max":
-						ValidateIntGauge(t, metric, &max, 10, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)))
+						ValidateIntGauge(t, metric, &max, -10, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)))
 					case "testmetric_gauge_abs_min":
 						ValidateIntGauge(t, metric, &min, 3, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)))
 					}
