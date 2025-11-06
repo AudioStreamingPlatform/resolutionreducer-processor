@@ -62,11 +62,11 @@ func AggregateGauge[T GaugeValue](aggregate *GaugeAggregate[T], startTS pcommon.
 	}
 
 	if aggregate.min_abs > Abs(value) {
-		aggregate.min_abs = Abs(value)
+		aggregate.min_abs = value
 	}
 
 	if aggregate.max_abs < Abs(value) {
-		aggregate.max_abs = Abs(value)
+		aggregate.max_abs = value
 	}
 
 	if startTS < aggregate.startTS {
