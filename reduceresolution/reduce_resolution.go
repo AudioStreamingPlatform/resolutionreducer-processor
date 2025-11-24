@@ -125,10 +125,10 @@ func (p *ReduceResolution) ProcessMetrics(_ context.Context, metrics pmetric.Met
 		scope.Scope().SetVersion(scopeContainer.scopeVersion)
 
 		for _, metricAggregate := range scopeContainer.intGaugeAggregate {
-			CreateGaugeMetrics(scope, metricAggregate, aggregationTimeStamp, p.Config)
+			CreateGaugeMetrics(scope, metricAggregate, aggregationTimeStamp, p)
 		}
 		for _, metricAggregate := range scopeContainer.floatGaugeAggregate {
-			CreateGaugeMetrics(scope, metricAggregate, aggregationTimeStamp, p.Config)
+			CreateGaugeMetrics(scope, metricAggregate, aggregationTimeStamp, p)
 		}
 
 		for _, metricAggregate := range scopeContainer.intCounterAggregate {
