@@ -6,6 +6,7 @@ package reduceresolution
 
 import (
 	"context"
+	"strings"
 
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
@@ -36,9 +37,9 @@ func createMetricsProcessor(
 	c := config.(*Config)
 
 	var processedConfig ProcessedConfig
-	processedConfig.RealMaxMinAggregation = map[string]bool{}
-	for i := 0; i < len(c.RealMaxMinAggregation); i++ {
-		processedConfig.RealMaxMinAggregation[c.RealMaxMinAggregation[i]] = true
+	processedConfig.MetricsStatistics = map[string][]string{}
+	for metricName, statisticsList := range c.MetricStatistics {
+		processedConfig.MetricsStatistics[strings.ToLower(metricName)] = statisticsList
 	}
 
 	logProcessor := &ReduceResolution{

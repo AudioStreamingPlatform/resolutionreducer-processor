@@ -5,11 +5,11 @@
 package reduceresolution
 
 type Config struct {
-	RealMaxMinAggregation []string `mapstructure:"real-max-min-aggregation"`
+	MetricStatistics map[string][]string `mapstructure:"gauge-aggregations"`
 }
 
 type ProcessedConfig struct {
-	RealMaxMinAggregation map[string]bool
+	MetricsStatistics map[string][]string
 }
 
 // Validate checks if the receiver configuration is valid

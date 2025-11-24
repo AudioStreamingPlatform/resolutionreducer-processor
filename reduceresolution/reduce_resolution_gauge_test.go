@@ -18,7 +18,7 @@ func TestValidateIntGaugeAggregation(t *testing.T) {
 	logger, _ := zap.NewDevelopment()
 	var processor *ReduceResolution = &ReduceResolution{
 		Logger: logger,
-		Config: ProcessedConfig{map[string]bool{}},
+		Config: ProcessedConfig{map[string][]string{}},
 	}
 
 	var mainMetrics pmetric.Metrics = CreateArgument(
@@ -84,7 +84,7 @@ func TestValidate2GaugeAggregationDifferentScope(t *testing.T) {
 	logger, _ := zap.NewDevelopment()
 	var processor *ReduceResolution = &ReduceResolution{
 		Logger: logger,
-		Config: ProcessedConfig{map[string]bool{}},
+		Config: ProcessedConfig{map[string][]string{}},
 	}
 
 	var mainMetrics pmetric.Metrics = CreateArgument(
@@ -168,7 +168,7 @@ func TestValidate2GaugeAggregationSameScope(t *testing.T) {
 	logger, _ := zap.NewDevelopment()
 	var processor *ReduceResolution = &ReduceResolution{
 		Logger: logger,
-		Config: ProcessedConfig{map[string]bool{}},
+		Config: ProcessedConfig{map[string][]string{}},
 	}
 
 	var mainMetrics pmetric.Metrics = CreateArgument(
@@ -235,7 +235,7 @@ func TestValidate2GaugeDoubleAggregationSameScope(t *testing.T) {
 	logger, _ := zap.NewDevelopment()
 	var processor *ReduceResolution = &ReduceResolution{
 		Logger: logger,
-		Config: ProcessedConfig{map[string]bool{}},
+		Config: ProcessedConfig{map[string][]string{}},
 	}
 
 	var mainMetrics pmetric.Metrics = CreateArgument(
@@ -302,7 +302,7 @@ func TestValidate2GaugeAggregationDiffScopeDiffName(t *testing.T) {
 	logger, _ := zap.NewDevelopment()
 	var processor *ReduceResolution = &ReduceResolution{
 		Logger: logger,
-		Config: ProcessedConfig{map[string]bool{}},
+		Config: ProcessedConfig{map[string][]string{}},
 	}
 
 	var mainMetrics pmetric.Metrics = CreateArgument(
@@ -410,7 +410,7 @@ func TestValidate2GaugeAggregationDiffScopeDiffVersion(t *testing.T) {
 	logger, _ := zap.NewDevelopment()
 	var processor *ReduceResolution = &ReduceResolution{
 		Logger: logger,
-		Config: ProcessedConfig{map[string]bool{}},
+		Config: ProcessedConfig{map[string][]string{}},
 	}
 
 	var mainMetrics pmetric.Metrics = CreateArgument(
@@ -520,10 +520,10 @@ func TestValidate2GaugeAggregationRealMaxMin(t *testing.T) {
 	logger, _ := zap.NewDevelopment()
 	var processor *ReduceResolution = &ReduceResolution{
 		Logger: logger,
-		Config: ProcessedConfig{map[string]bool{}},
+		Config: ProcessedConfig{map[string][]string{}},
 	}
 
-	processor.Config.RealMaxMinAggregation["testmetric"] = true
+	processor.Config.MetricsStatistics["testmetric"] = []string{"max", "min"}
 
 	var mainMetrics pmetric.Metrics = CreateArgument(
 		MetricArg{
@@ -589,10 +589,10 @@ func TestValidate2GaugeAggregationRealMaxMinOnlyNegatives(t *testing.T) {
 	logger, _ := zap.NewDevelopment()
 	var processor *ReduceResolution = &ReduceResolution{
 		Logger: logger,
-		Config: ProcessedConfig{map[string]bool{}},
+		Config: ProcessedConfig{map[string][]string{}},
 	}
 
-	processor.Config.RealMaxMinAggregation["testmetric"] = true
+	processor.Config.MetricsStatistics["testmetric"] = []string{"max", "min"}
 
 	var mainMetrics pmetric.Metrics = CreateArgument(
 		MetricArg{
@@ -658,10 +658,9 @@ func TestValidate2GaugeAggregationRealMaxMinOnlyPositives(t *testing.T) {
 	logger, _ := zap.NewDevelopment()
 	var processor *ReduceResolution = &ReduceResolution{
 		Logger: logger,
-		Config: ProcessedConfig{map[string]bool{}},
+		Config: ProcessedConfig{map[string][]string{}},
 	}
-
-	processor.Config.RealMaxMinAggregation["testmetric"] = true
+	processor.Config.MetricsStatistics["testmetric"] = []string{"max", "min"}
 
 	var mainMetrics pmetric.Metrics = CreateArgument(
 		MetricArg{
@@ -727,7 +726,7 @@ func TestValidate2GaugeAggregationAbsMaxMinOnlyNegatives(t *testing.T) {
 	logger, _ := zap.NewDevelopment()
 	var processor *ReduceResolution = &ReduceResolution{
 		Logger: logger,
-		Config: ProcessedConfig{map[string]bool{}},
+		Config: ProcessedConfig{map[string][]string{}},
 	}
 
 	var mainMetrics pmetric.Metrics = CreateArgument(
@@ -785,6 +784,86 @@ func TestValidate2GaugeAggregationAbsMaxMinOnlyNegatives(t *testing.T) {
 				}
 				assert.True(t, max)
 				assert.True(t, min)
+			}
+		}
+	})
+}
+
+func TestValidate2GaugeAggregationDifferentTypes(t *testing.T) {
+	logger, _ := zap.NewDevelopment()
+	var processor *ReduceResolution = &ReduceResolution{
+		Logger: logger,
+		Config: ProcessedConfig{map[string][]string{}},
+	}
+	processor.Config.MetricsStatistics["testmetric"] = []string{"count", "sum", "max", "avg", "abs_min"}
+
+	var mainMetrics pmetric.Metrics = CreateArgument(
+		MetricArg{
+			[]ResourceMetricsArg{
+				{
+					[]ScopeArg{
+						{
+							"testscope",
+							"1.0",
+							[]GaugeArg[float64]{},
+							[]GaugeArg[int64]{
+								{
+									"testmetric",
+									pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)),
+									pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 30, 0, time.UTC)),
+									[]int64{
+										-2, -10,
+									},
+								},
+							},
+							[]CounterArg[float64]{},
+							[]CounterArg[int64]{},
+							[]HistogramArg{},
+						},
+					},
+				},
+			},
+		},
+	)
+
+	t.Run("validate aggregated gauge", func(t *testing.T) {
+		finalMetrics, error := processor.ProcessMetrics(nil, mainMetrics)
+
+		assert.NoError(t, error)
+		var count bool = false
+		var sum bool = false
+		var max bool = false
+		var avg bool = false
+		var abs_min bool = false
+
+		for i := 0; i < finalMetrics.ResourceMetrics().Len(); i++ {
+			resourceMetric := finalMetrics.ResourceMetrics().At(i)
+			assert.Equal(t, 1, resourceMetric.ScopeMetrics().Len())
+			for j := 0; j < resourceMetric.ScopeMetrics().Len(); j++ {
+				scope := resourceMetric.ScopeMetrics().At(j)
+				assert.Equal(t, "testscope", scope.Scope().Name())
+				assert.Equal(t, "1.0", scope.Scope().Version())
+				for k := 0; k < scope.Metrics().Len(); k++ {
+					metric := scope.Metrics().At(k)
+					assert.Equal(t, pmetric.MetricTypeGauge, metric.Type())
+					switch metric.Name() {
+					case "testmetric_gauge_count":
+						ValidateIntGauge(t, metric, &count, 2, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)))
+					case "testmetric_gauge_sum":
+						ValidateIntGauge(t, metric, &sum, -12, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)))
+					case "testmetric_gauge_max":
+						ValidateIntGauge(t, metric, &max, -2, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)))
+					case "testmetric_gauge_avg":
+						ValidateIntGauge(t, metric, &avg, -6, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)))
+					case "testmetric_gauge_abs_min":
+						ValidateIntGauge(t, metric, &abs_min, 2, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)))
+					}
+				}
+				assert.True(t, count)
+				assert.True(t, sum)
+				assert.True(t, max)
+				assert.True(t, avg)
+				assert.True(t, abs_min)
 			}
 		}
 	})

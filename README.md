@@ -33,7 +33,7 @@ The end result of an aggregated gauge is the following metrics:
 
 When a gauge is received, it is converted into 2 different gauges, represented above. Therefore, if a gauge called `speed` is emitted from a client, it will result in 5 gauges called `speed_gauge_abs_max`, and `speed_gauge_abs_min`.
 
-If the real maximum, minimum value are more suitable, it is possible to add the name of the metric in the collector's options:
+If other types of aggregates are more suitable, like the real maximum, minimum or even other types, like average, counter, etc., it is possible to add the name of the metric in the collector's options:
 
 ```yaml
 ...
@@ -42,13 +42,28 @@ processors:
     timeout: 30s
   
   reduceresolution:
-      real-max-min-aggregation:
-      - testmetric
-      - testmetric2
+    gauge-aggregations:
+      metricA:
+        - max
+        - min
+        - avg
+      metricb:
+        - avg
+        - count
+        - abs_max
 ...
 ```
 
-This will change the name from `_gauge_abs_max`, and `_gauge_abs_min` to `_gauge_max`, and `gauge_min`. The value emitted will be the actual minimum and maximum value.
+This will change the name from `_gauge_abs_max`, and `_gauge_abs_min` to `_gauge_max`, `_gauge_min`, and `_gauge_avg` for metricA, and `_gauge_avg`, `_gauge_count`, and `_gauge_abs_max` for metricb. 
+
+The possible values are:
+- avg
+- count
+- sum
+- max
+- min
+- abs_max
+- abs_min
 
 ### Counter and UpDownCounter
 Both the Counter and the UpDownCounter are just summed together and emitted with a single value. The name of the counter or the UpDownCounter are not changed.

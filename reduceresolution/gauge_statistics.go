@@ -5,6 +5,8 @@
 package reduceresolution
 
 import (
+	"strings"
+
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/pmetric"
 )
@@ -74,7 +76,7 @@ func AggregateGauge[T GaugeValue](aggregate *GaugeAggregate[T], startTS pcommon.
 	}
 }
 
-func CreateGaugeMetrics[T GaugeValue](scope pmetric.ScopeMetrics, aggregate *GaugeAggregate[T], aggregationTS pcommon.Timestamp, Config ProcessedConfig) {
+func CreateGaugeMetrics[T GaugeValue](scope pmetric.ScopeMetrics, aggregate *GaugeAggregate[T], aggregationTS pcommon.Timestamp, p *ReduceResolution) {
 
 	createSpecificMetric := func(scope pmetric.ScopeMetrics, aggregate *GaugeAggregate[T], sufix string, value T) {
 		metric := scope.Metrics().AppendEmpty()
@@ -100,12 +102,38 @@ func CreateGaugeMetrics[T GaugeValue](scope pmetric.ScopeMetrics, aggregate *Gau
 	// into more or less metrics depending on what is required
 	//  createSpecificMetric(scope, aggregate, "_gauge_avg", aggregate.average)
 
-	if Config.RealMaxMinAggregation[aggregate.name] {
-		createSpecificMetric(scope, aggregate, "_gauge_max", aggregate.max)
-		createSpecificMetric(scope, aggregate, "_gauge_min", aggregate.min)
+	if statistics, ok := p.Config.MetricsStatistics[strings.ToLower(aggregate.name)]; ok {
+		for _, statistic := range statistics {
+			switch statistic {
+			case "avg":
+				createSpecificMetric(scope, aggregate, "_gauge_avg", aggregate.average)
+			case "sum":
+				createSpecificMetric(scope, aggregate, "_gauge_sum", aggregate.sum)
+			case "min":
+				createSpecificMetric(scope, aggregate, "_gauge_min", aggregate.min)
+			case "max":
+				createSpecificMetric(scope, aggregate, "_gauge_max", aggregate.max)
+			case "abs_min":
+				createSpecificMetric(scope, aggregate, "_gauge_abs_min", aggregate.min_abs)
+			case "abs_max":
+				createSpecificMetric(scope, aggregate, "_gauge_abs_max", aggregate.max_abs)
+			case "count":
+				metric := scope.Metrics().AppendEmpty()
+				metric.SetName(aggregate.name + "_gauge_count")
+				metric.SetDescription(aggregate.description)
+				gauge := metric.SetEmptyGauge()
+				gauge_dp := gauge.DataPoints().AppendEmpty()
+				gauge_dp.SetStartTimestamp(aggregate.startTS)
+				gauge_dp.SetTimestamp(aggregationTS)
+				aggregate.attributes.CopyTo(gauge_dp.Attributes())
+				gauge_dp.SetIntValue(aggregate.count)
+			default:
+				p.Logger.Warn("Type " + statistic + " is not valid. Tried for metric " + aggregate.name)
+			}
+		}
 	} else {
+		// default to abs min max
 		createSpecificMetric(scope, aggregate, "_gauge_abs_max", aggregate.max_abs)
 		createSpecificMetric(scope, aggregate, "_gauge_abs_min", aggregate.min_abs)
 	}
-
 }

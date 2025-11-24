@@ -14,9 +14,16 @@ processors:
     timeout: 30s
   
   reduceresolution:
-    real-max-min-aggregation:
-      - testmetric
-      - testmetric2
+    gauge-aggregations:
+      metricA:
+        - max
+        - min
+        - avg
+      metricb:
+        - avg
+        - count
+        - max
+
 
 exporters:
   debug:
