@@ -37,6 +37,7 @@ func TestValidateIntCounterAggregation(t *testing.T) {
 									pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)),
 									pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 30, 0, time.UTC)),
 									true,
+									true,
 									[]int64{
 										3,
 									},
@@ -66,7 +67,7 @@ func TestValidateIntCounterAggregation(t *testing.T) {
 					metric := scope.Metrics().At(k)
 					assert.Equal(t, pmetric.MetricTypeSum, metric.Type())
 					assert.Equal(t, "testmetric", metric.Name())
-					ValidateIntCounter(t, metric, &counter, true, 3, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)))
+					ValidateIntCounter(t, metric, &counter, true, true, 3, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)))
 				}
 				assert.True(t, counter)
 			}
@@ -97,6 +98,7 @@ func TestValidate2CounterAggregationDifferentScope(t *testing.T) {
 									pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)),
 									pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 30, 0, time.UTC)),
 									true,
+									true,
 									[]int64{
 										3,
 									},
@@ -115,6 +117,7 @@ func TestValidate2CounterAggregationDifferentScope(t *testing.T) {
 									"testmetric",
 									pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)),
 									pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 40, 0, time.UTC)),
+									true,
 									true,
 									[]int64{
 										5,
@@ -145,7 +148,7 @@ func TestValidate2CounterAggregationDifferentScope(t *testing.T) {
 					metric := scope.Metrics().At(k)
 					assert.Equal(t, pmetric.MetricTypeSum, metric.Type())
 					assert.Equal(t, "testmetric", metric.Name())
-					ValidateIntCounter(t, metric, &counter, true, 5, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)))
+					ValidateIntCounter(t, metric, &counter, true, true, 5, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)))
 				}
 				assert.True(t, counter)
 			}
@@ -176,6 +179,7 @@ func TestValidate2CounterAggregationSameScope(t *testing.T) {
 									pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)),
 									pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 30, 0, time.UTC)),
 									true,
+									false,
 									[]int64{
 										3, 5,
 									},
@@ -205,7 +209,7 @@ func TestValidate2CounterAggregationSameScope(t *testing.T) {
 					metric := scope.Metrics().At(k)
 					assert.Equal(t, pmetric.MetricTypeSum, metric.Type())
 					assert.Equal(t, "testmetric", metric.Name())
-					ValidateIntCounter(t, metric, &counter, true, 3, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)))
+					ValidateIntCounter(t, metric, &counter, true, false, 3, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)))
 				}
 				assert.True(t, counter)
 			}
@@ -234,6 +238,7 @@ func TestValidate2DoubleCounterAggregationSameScope(t *testing.T) {
 									"testmetric",
 									pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)),
 									pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 30, 0, time.UTC)),
+									true,
 									true,
 									[]float64{
 										3.0, 5.0,
@@ -265,7 +270,7 @@ func TestValidate2DoubleCounterAggregationSameScope(t *testing.T) {
 					metric := scope.Metrics().At(k)
 					assert.Equal(t, pmetric.MetricTypeSum, metric.Type())
 					assert.Equal(t, "testmetric", metric.Name())
-					ValidateDoubleCounter(t, metric, &counter, true, 3.0, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)))
+					ValidateDoubleCounter(t, metric, &counter, true, true, 3.0, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)))
 				}
 				assert.True(t, counter)
 			}
@@ -296,6 +301,7 @@ func TestValidate2CounterAggregationDiffScopeDiffName(t *testing.T) {
 									pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)),
 									pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 30, 0, time.UTC)),
 									true,
+									false,
 									[]int64{
 										3,
 									},
@@ -314,6 +320,7 @@ func TestValidate2CounterAggregationDiffScopeDiffName(t *testing.T) {
 									"testmetric",
 									pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 20, 0, time.UTC)),
 									pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 30, 0, time.UTC)),
+									true,
 									true,
 									[]int64{
 										5,
@@ -348,7 +355,7 @@ func TestValidate2CounterAggregationDiffScopeDiffName(t *testing.T) {
 						metric := scope.Metrics().At(k)
 						assert.Equal(t, pmetric.MetricTypeSum, metric.Type())
 						assert.Equal(t, "testmetric", metric.Name())
-						ValidateIntCounter(t, metric, &counter, true, 3, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)))
+						ValidateIntCounter(t, metric, &counter, true, false, 3, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)))
 					}
 					assert.True(t, counter)
 
@@ -360,7 +367,7 @@ func TestValidate2CounterAggregationDiffScopeDiffName(t *testing.T) {
 						metric := scope.Metrics().At(k)
 						assert.Equal(t, pmetric.MetricTypeSum, metric.Type())
 						assert.Equal(t, "testmetric", metric.Name())
-						ValidateIntCounter(t, metric, &counter, true, 5, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 20, 0, time.UTC)))
+						ValidateIntCounter(t, metric, &counter, true, true, 5, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 20, 0, time.UTC)))
 
 					}
 					assert.True(t, counter)
@@ -395,6 +402,7 @@ func TestValidate2CounterAggregationDiffScopeDiffVersion(t *testing.T) {
 									pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 20, 0, time.UTC)),
 									pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 30, 0, time.UTC)),
 									true,
+									true,
 									[]int64{
 										3,
 									},
@@ -413,6 +421,7 @@ func TestValidate2CounterAggregationDiffScopeDiffVersion(t *testing.T) {
 									"testmetric",
 									pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)),
 									pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 30, 0, time.UTC)),
+									true,
 									true,
 									[]int64{
 										5,
@@ -448,7 +457,7 @@ func TestValidate2CounterAggregationDiffScopeDiffVersion(t *testing.T) {
 						metric := scope.Metrics().At(k)
 						assert.Equal(t, pmetric.MetricTypeSum, metric.Type())
 						assert.Equal(t, "testmetric", metric.Name())
-						ValidateIntCounter(t, metric, &counter, true, 3, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 20, 0, time.UTC)))
+						ValidateIntCounter(t, metric, &counter, true, true, 3, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 20, 0, time.UTC)))
 					}
 					assert.True(t, counter)
 				case "2.0":
@@ -460,7 +469,7 @@ func TestValidate2CounterAggregationDiffScopeDiffVersion(t *testing.T) {
 						metric := scope.Metrics().At(k)
 						assert.Equal(t, pmetric.MetricTypeSum, metric.Type())
 						assert.Equal(t, "testmetric", metric.Name())
-						ValidateIntCounter(t, metric, &counter, true, 5, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)))
+						ValidateIntCounter(t, metric, &counter, true, true, 5, pcommon.NewTimestampFromTime(time.Date(2025, time.January, 1, 12, 0, 10, 0, time.UTC)))
 					}
 					assert.True(t, counter)
 				}

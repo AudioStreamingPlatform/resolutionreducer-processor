@@ -32,7 +32,7 @@ func ValidateIntGauge(t *testing.T, metric pmetric.Metric, wasChecked *bool, val
 	assert.Equal(t, value, metric.Gauge().DataPoints().At(0).IntValue())
 }
 
-func ValidateCounter(t *testing.T, metric pmetric.Metric, wasChecked *bool, isCumulative bool, startTs pcommon.Timestamp) {
+func ValidateCounter(t *testing.T, metric pmetric.Metric, wasChecked *bool, isCumulative bool, isMonotonic bool, startTs pcommon.Timestamp) {
 	assert.False(t, *wasChecked)
 	*wasChecked = true
 	assert.Equal(t, pmetric.MetricTypeSum, metric.Type())
@@ -42,17 +42,18 @@ func ValidateCounter(t *testing.T, metric pmetric.Metric, wasChecked *bool, isCu
 	} else {
 		assert.Equal(t, pmetric.AggregationTemporalityDelta, metric.Sum().AggregationTemporality())
 	}
+	assert.Equal(t, isMonotonic, metric.Sum().IsMonotonic())
 	assert.Equal(t, startTs, metric.Sum().DataPoints().At(0).StartTimestamp())
 }
 
-func ValidateDoubleCounter(t *testing.T, metric pmetric.Metric, wasChecked *bool, isCumulative bool, value float64, startTs pcommon.Timestamp) {
-	ValidateCounter(t, metric, wasChecked, isCumulative, startTs)
+func ValidateDoubleCounter(t *testing.T, metric pmetric.Metric, wasChecked *bool, isCumulative bool, isMonotonic bool, value float64, startTs pcommon.Timestamp) {
+	ValidateCounter(t, metric, wasChecked, isCumulative, isMonotonic, startTs)
 	assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, metric.Sum().DataPoints().At(0).ValueType())
 	assert.Equal(t, value, metric.Sum().DataPoints().At(0).DoubleValue())
 }
 
-func ValidateIntCounter(t *testing.T, metric pmetric.Metric, wasChecked *bool, isCumulative bool, value int64, startTs pcommon.Timestamp) {
-	ValidateCounter(t, metric, wasChecked, isCumulative, startTs)
+func ValidateIntCounter(t *testing.T, metric pmetric.Metric, wasChecked *bool, isCumulative bool, isMonotonic bool, value int64, startTs pcommon.Timestamp) {
+	ValidateCounter(t, metric, wasChecked, isCumulative, isMonotonic, startTs)
 	assert.Equal(t, pmetric.NumberDataPointValueTypeInt, metric.Sum().DataPoints().At(0).ValueType())
 	assert.Equal(t, value, metric.Sum().DataPoints().At(0).IntValue())
 }
@@ -90,6 +91,7 @@ type CounterArg[T CounterValue] struct {
 	startTS    pcommon.Timestamp
 	ts         pcommon.Timestamp
 	cumulative bool
+	monotonic  bool
 	values     []T
 }
 
@@ -174,6 +176,7 @@ func CreateArgument(metricArg MetricArg) pmetric.Metrics {
 				} else {
 					counter.SetAggregationTemporality(pmetric.AggregationTemporalityDelta)
 				}
+				counter.SetIsMonotonic(metricArg.monotonic)
 				for _, value := range metricArg.values {
 					dp := counter.DataPoints().AppendEmpty()
 					dp.SetIntValue(value)
@@ -191,6 +194,7 @@ func CreateArgument(metricArg MetricArg) pmetric.Metrics {
 				} else {
 					counter.SetAggregationTemporality(pmetric.AggregationTemporalityDelta)
 				}
+				counter.SetIsMonotonic(metricArg.monotonic)
 				for _, value := range metricArg.values {
 					dp := counter.DataPoints().AppendEmpty()
 					dp.SetDoubleValue(value)

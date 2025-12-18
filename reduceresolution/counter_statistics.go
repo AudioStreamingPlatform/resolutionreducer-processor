@@ -22,6 +22,7 @@ type CounterAggregate[T CounterValue] struct {
 	startTS     pcommon.Timestamp
 	lastTS      pcommon.Timestamp
 	aggregation pmetric.AggregationTemporality
+	monotonic   bool
 }
 
 func CreateCounterAggregate[T CounterValue](metric pmetric.Metric, attributes pcommon.Map, startTS pcommon.Timestamp, lastTS pcommon.Timestamp, value T) *CounterAggregate[T] {
@@ -34,6 +35,7 @@ func CreateCounterAggregate[T CounterValue](metric pmetric.Metric, attributes pc
 		startTS:     startTS,
 		lastTS:      lastTS,
 		aggregation: metric.Sum().AggregationTemporality(),
+		monotonic:   metric.Sum().IsMonotonic(),
 	}
 }
 
@@ -62,6 +64,7 @@ func CreateCounterMetrics[T GaugeValue](scope pmetric.ScopeMetrics, aggregate *C
 	metric_value.SetDescription(aggregate.description)
 	counter := metric_value.SetEmptySum()
 	counter.SetAggregationTemporality(aggregate.aggregation)
+	counter.SetIsMonotonic(aggregate.monotonic)
 	counter_dp := counter.DataPoints().AppendEmpty()
 	counter_dp.SetStartTimestamp(aggregate.startTS)
 	counter_dp.SetTimestamp(aggregationTS)
