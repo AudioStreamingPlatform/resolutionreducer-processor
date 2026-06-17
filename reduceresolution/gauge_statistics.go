@@ -42,8 +42,8 @@ func CreateGaugeAggregate[T GaugeValue](metric pmetric.Metric, attributes pcommo
 		count:       1,
 		max:         value,
 		min:         value,
-		max_abs:     Abs(value),
-		min_abs:     Abs(value),
+		max_abs:     value,
+		min_abs:     value,
 		sum:         value,
 		name:        metric.Name(),
 		description: metric.Description(),
@@ -63,11 +63,11 @@ func AggregateGauge[T GaugeValue](aggregate *GaugeAggregate[T], startTS pcommon.
 		aggregate.max = value
 	}
 
-	if aggregate.min_abs > Abs(value) {
+	if Abs(aggregate.min_abs) > Abs(value) {
 		aggregate.min_abs = value
 	}
 
-	if aggregate.max_abs < Abs(value) {
+	if Abs(aggregate.max_abs) < Abs(value) {
 		aggregate.max_abs = value
 	}
 
