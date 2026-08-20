@@ -74,7 +74,11 @@ Just like the Counter, the Linear Histogram is summed together and emitted a sin
 ## How to work locally
 
 Install the go version 1.20.12 locally.
-Obtain the Open Telemetry Collector builder with `Dockerfile`.
+Obtain the Open Telemetry Collector builder with `Dockerfile`, by running the following command:
+
+```
+docker build -t get-ocb . && c=$(docker create get-ocb) && docker cp "$c:/app/ocb" ./ocb && docker rm "$c"
+```
 
 ## How to build a collector
 
