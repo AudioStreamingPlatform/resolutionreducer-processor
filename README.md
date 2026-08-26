@@ -95,3 +95,7 @@ To run the built collector, run the following command:
 ## How to run the unit tests
 
 Change to the `reduceresolution` folder and run `go test`. For more details on the test run, execute `go test -v`.
+
+## How to build a new version
+
+The OpenTelemetry collector uses GitHub tags to build any component into the collector. To build an up to date version, create a tag with the name format reduceresolution/v0.`<MAJOR VERSION>`.`<MINOR VERSION>` and push it to the repository. Bump the `<MINOR NUMBER>` for small bug fixes, and `<MAJOR NUMBER>` for major bug fixes or new features.
